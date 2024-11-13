@@ -4,7 +4,7 @@
         "baseUrl": "src",
         "outDir": "dist",
         "target": "ESNext",
-        "module": "ESNext",
+        "jsx": "preserve",
         "lib": ["dom", "dom.iterable", "esnext"],
         "skipLibCheck": true,
         "strict": true,
@@ -17,7 +17,6 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "jsx": "preserve",
         "incremental": true,
         "composite": true,
         "declaration": true,
@@ -25,12 +24,12 @@
         "declarationDir": "dist",
         "sourceMap": true,
         "paths": {
-            "": ["./*"],
-            "~/*": ["./*"],
-            "@coinmeca/wallet-provider/*": ["../../wallet-provider/dist/*"]
+            "": ["./src/*"],
+            "~/*": ["./src/*"],
+            "@coinmeca/wallet-sdk/*": ["../wallet-sdk/dist/*"]
         },
         "typeRoots": ["src/types", "node_modules/@types"]
     },
-    "include": ["src", "next-env.d.ts", ".next/types/**/*.ts", "*.ts", "*.tsx"],
-    "exclude": ["node_modules", "**/.*/", "next.config.json", "tsup.config.json", "tsup.config.ts", "dist", "build"]
+    "include": ["src"],
+    "exclude": ["node_modules", "dist", "rollup.config.*"]
 }

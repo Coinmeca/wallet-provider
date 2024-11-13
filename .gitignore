@@ -2,10 +2,7 @@
 
 # dependencies
 /**/node_modules
-/**/trading-view
-/**/dist
-/public
-/wallet-sdk
+ui-kit
 
 # testing
 /coverage
@@ -15,9 +12,9 @@
 /out/
 
 # production
-/build
-/dist
-/.turbo
+/**/build
+/**/dist
+/**/.turbo
 
 # misc
 .DS_Store
@@ -35,7 +32,6 @@ yarn-error.log*
 
 # vercel
 .vercel
-
 
 # yarn
 .pnp*
