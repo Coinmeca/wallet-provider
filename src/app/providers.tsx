@@ -1,11 +1,13 @@
 ﻿"use client";
 import { StrictMode } from "react";
-import { CoinmecaWalletContextProvider } from "@coinmeca/wallet-provider/provider";
+import { CoinmecaWalletContextProvider, CoinmecaWalletAdapterContextProvider } from "../contexts";
 
 export default function Providers({ children }: { children: any }) {
     return (
         <StrictMode>
-            <CoinmecaWalletContextProvider>{children}</CoinmecaWalletContextProvider>
+            <CoinmecaWalletContextProvider>
+                <CoinmecaWalletAdapterContextProvider>{children}</CoinmecaWalletAdapterContextProvider>
+            </CoinmecaWalletContextProvider>
         </StrictMode>
     );
 }
