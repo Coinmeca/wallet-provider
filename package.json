@@ -13,6 +13,9 @@
         "type": "git",
         "url": "https://github.com/coinmeca/wallet-provider"
     },
+    "workspaces": [
+        "wallet-sdk"
+    ],
     "license": "MIT",
     "sideEffects": false,
     "type": "module",
@@ -42,9 +45,14 @@
         }
     },
     "scripts": {
+        "setup": "git submodule update --init --recursive && cd wallet-sdk && git fetch origin && git checkout main && git pull origin main && cd .. && git submodule update --init --recursive",
+        "install": "yarn install",
+        "install:ui": "yarn workspace @coinmeca/wallet-sdk install",
         "check": "npx tsc --watch",
         "build": "yarn clean && npx tsc --build --force",
+        "install:sdk": "yarn workspace @coinmeca/wallet-sdk build",
         "deploy": "npm publish",
+        "deploy:sdk": "yarn workspace @coinmeca/wallet-sdk deploy",
         "clean": "rm -rf ./dist ./build ./.next ./node_modules/.cache ./tsconfig.tsbuildinfo"
     },
     "dependencies": {
