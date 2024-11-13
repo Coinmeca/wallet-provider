@@ -71,7 +71,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 provider?.off("updateFungibleAsset", updateFungibles);
             };
         }
-    }, [provider, localStorage]);
+    }, [provider]);
 
     return (
         <CoinmecaWalletContext.Provider
