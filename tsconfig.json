@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "rootDir": "src",
+        "rootDir": "src/contexts",
         "baseUrl": "src",
         "outDir": "dist",
         "target": "ESNext",
@@ -24,13 +24,14 @@
         "declarationMap": true,
         "declarationDir": "dist",
         "sourceMap": true,
+        "plugins": [{ "name": "next" }],
         "paths": {
             "": ["./*"],
             "~/*": ["./*"],
-            "@coinmeca/wallet-provider/*": ["../../wallet-provider/dist/*"]
+            "@coinmeca/wallet-sdk/*": ["../wallet-sdk/src/contexts/*"]
         },
         "typeRoots": ["src/types", "node_modules/@types"]
     },
-    "include": ["src", "next-env.d.ts", ".next/types/**/*.ts", "*.ts", "*.tsx"],
-    "exclude": ["node_modules", "**/.*/", "next.config.json", "tsup.config.json", "tsup.config.ts", "dist", "build"]
+    "include": ["src/contexts", "next-env.d.ts", ".next/types/**/*.ts", "*.ts", "*.tsx"],
+    "exclude": ["node_modules", "**/.*/", "next.config.json", "dist", "build", "wallet-sdk"]
 }
