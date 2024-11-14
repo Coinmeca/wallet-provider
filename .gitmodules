@@ -1,4 +1,4 @@
 [submodule "wallet-sdk"]
 	path = wallet-sdk
-	url = https://${GIT_TOKEN}@github.com/coinmeca/wallet-sdk
+	url = https://github.com/coinmeca/wallet-sdk
 	branch = dev
