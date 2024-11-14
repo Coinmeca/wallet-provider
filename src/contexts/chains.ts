@@ -781,8 +781,8 @@ export function parseChainId(chain: number | string | Chain): number {
             ? Number(chain)
             : parseInt(chain)
         : typeof chain === "number"
-        ? chain
-        : parseChainId(chain?.chainId);
+            ? chain
+            : parseChainId(chain?.chainId);
 }
 
 export function formatChainId(chain: number | string | Chain): string {
@@ -792,8 +792,8 @@ export function formatChainId(chain: number | string | Chain): string {
             ? chain
             : formatChainId(parseInt(chain))
         : typeof chain === "number"
-        ? `0x${chain?.toString(16)}`
-        : formatChainId(chain?.chainId);
+            ? `0x${chain?.toString(16)}`
+            : formatChainId(chain?.chainId);
 }
 
 export function getChain(
@@ -806,7 +806,11 @@ export function getChain(
 
 export function getChainsByType(type: "mainnet" | "testnet" | "devnet"): Chain[] {
     return Object.values(chainlist)
-        .flatMap((network) => (type === "mainnet" ? network[type] : typeof network?.[type] === "object" ? Object.values(network?.[type]) : network?.[type])) // Access the network[type] object
+        .flatMap((network) => typeof network[type] === 'object' && network[type] !== null
+            ? Object.values(network[type] as { [key: string]: Chain })
+            : Array.isArray(network[type])
+                ? network[type]
+                : network[type] ? [network[type]] : [])
         .filter((network): network is Chain => Boolean(network));
 }
 
