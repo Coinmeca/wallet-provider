@@ -50,7 +50,7 @@
         "clean": "rm -rf ./dist ./build ./.next ./node_modules/.cache ./tsconfig.tsbuildinfo"
     },
     "dependencies": {
-        "@coinmeca/wallet-sdk": "0.0.3",
+        "@coinmeca/wallet-sdk": "0.0.4",
         "axios": "^1.7.7",
         "crypto-js": "^4.2.0",
         "ethereumjs-tx": "^2.1.2",
