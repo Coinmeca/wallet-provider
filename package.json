@@ -1,6 +1,6 @@
 {
     "name": "@coinmeca/wallet-provider",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "keywords": [
         "coinmeca",
         "ethereum",
@@ -76,6 +76,9 @@
         "eslint-config-next": "14.2.16",
         "tsx": "^4.19.1",
         "typescript": "^5.6.3"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "packageManager": "yarn@4.5.1"
 }
