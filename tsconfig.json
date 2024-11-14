@@ -26,9 +26,9 @@
         "sourceMap": true,
         "plugins": [{ "name": "next" }],
         "paths": {
-            "": ["./*"],
+            "": ["./src/contexts/*"],
             "~/*": ["./*"],
-            "@coinmeca/wallet-sdk/*": ["../wallet-sdk/src/contexts/*"]
+            "@coinmeca/wallet-sdk/*": ["./wallet-sdk/src/*"]
         },
         "typeRoots": ["src/types", "node_modules/@types"]
     },
