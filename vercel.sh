@@ -11,5 +11,6 @@ git submodule update --init --recursive
 
 # Install dependencies
 yarn install
-cd wallet-sdk && yarn install
+cd wallet-sdk && yarn install && yarn build
 cd ..
+yarn build
