@@ -27,11 +27,7 @@
         "plugins": [{ "name": "next" }],
         "paths": {
             "": ["./src/contexts/*"],
-            "~/*": ["./*"],
-<<<<<<< HEAD
-=======
-            "@coinmeca/wallet-sdk/*": ["./wallet-sdk/src/*"]
->>>>>>> dev
+            "~/*": ["./*"]
         },
         "typeRoots": ["src/types", "node_modules/@types"]
     },
