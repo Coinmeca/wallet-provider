@@ -1,8 +1,8 @@
 ﻿"use client";
 
-import React, { createContext, useContext, useLayoutEffect, useState } from "react";
-import { Chain, Account, App } from "@coinmeca/wallet-sdk/types";
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
+import { Account, App, Chain } from "@coinmeca/wallet-sdk/types";
+import React, { createContext, useContext, useLayoutEffect, useState } from "react";
 
 interface CoinmecaWalletProviderContextProps {
     provider: CoinmecaWalletProvider | undefined;
@@ -34,8 +34,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
     const [fungibles, setFungibles] = useState<any>();
 
     useLayoutEffect(() => {
+        const sessionId = new Date().toJSON();
         const chainId = (window as any)?.coinmeca?.request?.chainId;
-        const provider = (window as any)?.coinmeca?.wallet || new CoinmecaWalletProvider({ chainId });
+        const provider = (window as any)?.coinmeca?.wallet || new CoinmecaWalletProvider({ chainId, sessionId });
         setProvider(provider);
     }, []);
 
@@ -49,7 +50,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 setChain(provider?.chain);
             };
 
-            const updateApps = () => {};
+            const updateApps = () => { };
 
             const updateFungibles = () => {
                 setAccount(provider?.account());
