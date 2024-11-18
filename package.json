@@ -1,6 +1,6 @@
 {
     "name": "@coinmeca/wallet-provider",
-    "version": "0.0.95",
+    "version": "0.0.98",
     "keywords": [
         "coinmeca",
         "ethereum",
@@ -27,11 +27,11 @@
     ],
     "exports": {
         ".": {
-            "require": "./dist/index.js"
+            "require": "./dist/index"
         },
         "./*": [
-            "./dist/*.js",
-            "./dist/*/index.js",
+            "./dist/*",
+            "./dist/*/index",
             "./dist/*"
         ]
     },
