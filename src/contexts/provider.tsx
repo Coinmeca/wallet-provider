@@ -50,7 +50,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 setChain(provider?.chain);
             };
 
-            const updateApps = () => { };
+            const updateApps = () => {};
 
             const updateFungibles = () => {
                 setAccount(provider?.account());
@@ -63,11 +63,13 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
 
             provider?.on("unlock", update);
             provider?.on("accountChanged", updateAccount);
+            provider?.on("accountEdited", updateAccount);
             provider?.on("chainChanged", updateChain);
             provider?.on("updateFungibleAsset", updateFungibles);
             return () => {
                 provider?.off("unlock", update);
                 provider?.off("accountChanged", updateAccount);
+                provider?.off("accountEdited", updateAccount);
                 provider?.off("chainChanged", updateChain);
                 provider?.off("updateFungibleAsset", updateFungibles);
             };
