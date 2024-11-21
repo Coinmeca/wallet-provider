@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
-import { Account, App, Chain } from "@coinmeca/wallet-sdk/types";
+import { Account, App, Chain, TransactionInfo } from "@coinmeca/wallet-sdk/types";
 import React, { createContext, useContext, useLayoutEffect, useState } from "react";
 
 interface CoinmecaWalletProviderContextProps {
@@ -16,6 +16,7 @@ interface CoinmecaWalletProviderContextProps {
         nonFungibles?: string[];
         multiTokens?: string[];
     };
+    tx: TransactionInfo[] | undefined;
 }
 
 const CoinmecaWalletContext = createContext<CoinmecaWalletProviderContextProps | undefined>(undefined);
@@ -95,6 +96,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                     nonFungibles: chain?.chainId ? account?.tokens?.nonFungibles?.[`${chain?.chainId}`] : undefined,
                     multiTokens: chain?.chainId ? account?.tokens?.multiTokens?.[`${chain?.chainId}`] : undefined,
                 },
+                tx: account?.tx?.[chain?.chainId || '']
             }}>
             {children}
         </CoinmecaWalletContext.Provider>
