@@ -15,7 +15,7 @@ interface CoinmecaWalletProviderContextProps {
         fungibles?: string[];
         nonFungibles?: string[];
         multiTokens?: string[];
-    };
+    };  
     tx: TransactionReceipt[] | undefined;
 }
 
