@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
-import { Account, App, Chain, TransactionInfo } from "@coinmeca/wallet-sdk/types";
-import React, { createContext, useContext, useLayoutEffect, useState } from "react";
+import { Account, App, Chain, TransactionReceipt } from "@coinmeca/wallet-sdk/types";
+import React, { createContext, useContext, useLayoutEffect, useMemo, useState } from "react";
 
 interface CoinmecaWalletProviderContextProps {
     provider: CoinmecaWalletProvider | undefined;
@@ -16,7 +16,7 @@ interface CoinmecaWalletProviderContextProps {
         nonFungibles?: string[];
         multiTokens?: string[];
     };
-    tx: TransactionInfo[] | undefined;
+    tx: TransactionReceipt[] | undefined;
 }
 
 const CoinmecaWalletContext = createContext<CoinmecaWalletProviderContextProps | undefined>(undefined);
@@ -32,7 +32,6 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
 
     const [account, setAccount] = useState<Account>();
     const [chain, setChain] = useState<Chain>();
-    const [apps, setApps] = useState<Chain>();
     const [fungibles, setFungibles] = useState<any>();
 
     useLayoutEffect(() => {
@@ -52,13 +51,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 setChain(provider?.chain);
             };
 
-            const updateApps = () => {
-                setApps(provider?.apps);
-            };
-
-            const updateFungibles = () => {
-                setFungibles(provider?.account()?.tokens?.fungibles?.[`${provider?.chain?.chainId}`]);
-            };
+            const updateFungibles = () => {};
 
             const update = () => {
                 updateAccount();
@@ -69,18 +62,27 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             provider?.on("accountChanged", updateAccount);
             provider?.on("accountEdited", updateAccount);
             provider?.on("chainChanged", updateChain);
-            provider?.on("appUpdated", updateApps);
             provider?.on("tokenUpdated", updateFungibles);
             return () => {
                 provider?.off("unlock", update);
                 provider?.off("accountChanged", updateAccount);
                 provider?.off("accountEdited", updateAccount);
                 provider?.off("chainChanged", updateChain);
-                provider?.off("appUpdated", updateApps);
                 provider?.off("tokenUpdated", updateFungibles);
             };
         }
     }, [provider]);
+
+    const tokens = useMemo(
+        () => ({
+            fungibles: chain?.chainId ? account?.tokens?.fungibles?.[`${chain?.chainId}`] : undefined,
+            nonFungibles: chain?.chainId ? account?.tokens?.nonFungibles?.[`${chain?.chainId}`] : undefined,
+            multiTokens: chain?.chainId ? account?.tokens?.multiTokens?.[`${chain?.chainId}`] : undefined,
+        }),
+        [provider, chain],
+    );
+    const apps = useMemo(() => provider?.apps, [provider?.apps]);
+    const tx = useMemo(() => account?.tx?.[chain?.chainId || ""], [account?.tx, chain?.chainId]);
 
     return (
         <CoinmecaWalletContext.Provider
@@ -90,13 +92,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 chain,
                 accounts: provider?.accounts() as Account[],
                 chains: provider?.chains,
-                apps: provider?.apps,
-                tokens: {
-                    fungibles: chain?.chainId ? account?.tokens?.fungibles?.[`${chain?.chainId}`] : undefined,
-                    nonFungibles: chain?.chainId ? account?.tokens?.nonFungibles?.[`${chain?.chainId}`] : undefined,
-                    multiTokens: chain?.chainId ? account?.tokens?.multiTokens?.[`${chain?.chainId}`] : undefined,
-                },
-                tx: account?.tx?.[chain?.chainId || '']
+                apps,
+                tokens,
+                tx,
             }}>
             {children}
         </CoinmecaWalletContext.Provider>
