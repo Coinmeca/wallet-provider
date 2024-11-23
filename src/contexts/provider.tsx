@@ -15,7 +15,7 @@ interface CoinmecaWalletProviderContextProps {
         fungibles?: string[];
         nonFungibles?: string[];
         multiTokens?: string[];
-    };  
+    };
     tx: TransactionReceipt[] | undefined;
 }
 
@@ -41,23 +41,24 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         setProvider(provider);
     }, []);
 
+    const updateAccount = () => {
+        setAccount(provider?.account());
+    };
+
+    const updateChain = () => {
+        setChain(provider?.chain);
+    };
+
+    const updateFungibles = () => {};
+
+    const update = () => {
+        updateAccount();
+        updateChain();
+    };
+
     useLayoutEffect(() => {
         if (provider) {
-            const updateAccount = () => {
-                setAccount(provider?.account());
-            };
-
-            const updateChain = () => {
-                setChain(provider?.chain);
-            };
-
-            const updateFungibles = () => {};
-
-            const update = () => {
-                updateAccount();
-                updateChain();
-            };
-
+            update();
             provider?.on("unlock", update);
             provider?.on("accountChanged", updateAccount);
             provider?.on("accountEdited", updateAccount);
@@ -79,7 +80,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             nonFungibles: chain?.chainId ? account?.tokens?.nonFungibles?.[`${chain?.chainId}`] : undefined,
             multiTokens: chain?.chainId ? account?.tokens?.multiTokens?.[`${chain?.chainId}`] : undefined,
         }),
-        [provider, chain],
+        [account, chain],
     );
     const apps = useMemo(() => provider?.apps, [provider?.apps]);
     const tx = useMemo(() => account?.tx?.[chain?.chainId || ""], [account?.tx, chain?.chainId]);
