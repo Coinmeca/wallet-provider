@@ -14,8 +14,6 @@
         "noEmit": false,
         "noImplicitAny": true,
         "moduleResolution": "node",
-
-        // "moduleResolution": "bundler",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
