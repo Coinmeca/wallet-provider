@@ -26,6 +26,6 @@
         "sourceMap": true,
         "plugins": [{ "name": "next" }]
     },
-    "include": ["src/contexts/**/*.ts", "src/contexts/**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
-    "exclude": ["node_modules", "next.config.*", "dist", "build", "wallet-sdk"]
+    "include": ["src/contexts", "next-env.d.ts", ".next/types/**/*.ts", "*.ts", "*.tsx"],
+    "exclude": ["node_modules", "**/.*/", "next.config.*", "dist", "build", "wallet-sdk"]
 }
