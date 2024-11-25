@@ -15,7 +15,7 @@ interface CoinmecaWalletProviderContextProps {
         fungibles?: string[];
         nonFungibles?: { [address: string]: string[] }[];
         multiTokens?: string[];
-    };  
+    };
     tx: TransactionReceipt[] | undefined;
 }
 
@@ -23,14 +23,15 @@ const CoinmecaWalletContext = createContext<CoinmecaWalletProviderContextProps |
 
 export const useCoinmecaWalletProvider = () => {
     const context = useContext(CoinmecaWalletContext);
-    if (!context) throw new Error("InjectedWalletContext for useInjectedWallet doesn't initialized yet.");
+    if (!context)
+        throw new Error("CoinmecaWalletContext is not initialized yet. Ensure the provider is correctly set up before using useCoinmecaWalletProvider.");
     return context;
 };
 
 export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     const [provider, setProvider] = useState<CoinmecaWalletProvider>();
-    const [updates,setUpdate] = useState<number>(0);
-    const update = () => setUpdate((n) => n + 1);
+    const [updates, setUpdate] = useState(0);
+    const update = () => setUpdate((_) => _ + 1);
 
     useLayoutEffect(() => {
         const sessionId = new Date().toJSON();
@@ -39,7 +40,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         setProvider(provider);
 
         const updateStorage = (event: StorageEvent) => {
-            if (event.storageArea === localStorage) setUpdate((n) => n + 1)
+            if (event.storageArea === localStorage) update();
         };
         window.addEventListener("storage", updateStorage);
         return () => {
@@ -75,7 +76,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         }
     }, [provider]);
 
-    const chain = provider?.chain;
+    const chainId = provider?.chainId;
     const account = provider?.account();
 
     return (
@@ -88,11 +89,11 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 chains: provider?.chains,
                 apps: provider?.apps,
                 tokens: {
-                    fungibles: chain?.chainId ? account?.tokens?.fungibles?.[`${chain?.chainId}`] : undefined,
-                    nonFungibles: chain?.chainId ? account?.tokens?.nonFungibles?.[`${chain?.chainId}`] : undefined,
-                    multiTokens: chain?.chainId ? account?.tokens?.multiTokens?.[`${chain?.chainId}`] : undefined,
+                    fungibles: chainId ? account?.tokens?.fungibles?.[`${chainId}`] : undefined,
+                    nonFungibles: chainId ? account?.tokens?.nonFungibles?.[`${chainId}`] : undefined,
+                    multiTokens: chainId ? account?.tokens?.multiTokens?.[`${chainId}`] : undefined,
                 },
-                tx: account?.tx?.[chain?.chainId || ""],
+                tx: account?.tx?.[chainId || ""],
             }}>
             {children}
         </CoinmecaWalletContext.Provider>

@@ -1,51 +1,52 @@
 ﻿"use client";
 
 import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Chain, Account } from "@coinmeca/wallet-sdk/types";
-import { CoinmecaWalletAdapter } from "@coinmeca/wallet-sdk/adapter";
+import { Chain } from "@coinmeca/wallet-sdk/types";
+import { CoinmecaWalletAdapter, CoinmecaWalletAdapterConfig } from "@coinmeca/wallet-sdk/adapter";
 
 interface CoinmecaWalletAdapterContextProps {
     adapter: CoinmecaWalletAdapter | undefined;
-    account: Account | undefined;
-    // accounts: Account[] | undefined;
+    address: string | undefined;
     chain: Chain | undefined;
-    // chains: Chain[] | undefined;
 }
 
 const CoinmecaWalletAdapterContext = createContext<CoinmecaWalletAdapterContextProps | undefined>(undefined);
 
 export const useCoinmecaWallet = () => {
     const context = useContext(CoinmecaWalletAdapterContext);
-    if (!context) throw new Error("InjectedWalletContext for useInjectedWallet doesn't initialized yet.");
+    if (!context) throw new Error("CoinmecaWalletAdapterContext is not initialized. Ensure the provider is set up correctly before using useCoinmecaWallet.");
     return context;
 };
 
-export const CoinmecaWalletAdapterContextProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const CoinmecaWalletAdapterContextProvider: React.FC<{ config?: CoinmecaWalletAdapterConfig; children?: React.ReactNode }> = ({ config, children }) => {
     const [adapter, setAdapter] = useState<CoinmecaWalletAdapter>();
+    const [updates, setUpdate] = useState(0);
+    const update = () => setUpdate((_) => _ + 1);
 
-    const [account, setAccount] = useState<Account>();
-    const [chain, setChain] = useState();
+    const address = adapter?.address;
+    const chain = adapter?.chain;
 
     useLayoutEffect(() => {
-        setAdapter(new CoinmecaWalletAdapter());
+        setAdapter((window as any)?.ethereum?.providerMap?.get("CoinmecaWallet") || new CoinmecaWalletAdapter(config));
+
+        const updateStorage = (event: StorageEvent) => {
+            if (event.storageArea === localStorage) update();
+        };
+        window.addEventListener("storage", updateStorage);
+        return () => {
+            window.removeEventListener("storage", updateStorage);
+        };
     }, []);
 
     useEffect(() => {
-        const updateAccount = () => {
-            // setAccount(adapter?.account);
-        };
+        adapter?.on("accountChanged", update);
+        adapter?.on("chainChanged", update);
 
-        const updateChain = () => {
-            // setChain(adapter?.chain);
-        };
-
-        adapter?.on("accountChanged", updateAccount);
-        adapter?.on("chainChanged", updateChain);
         return () => {
-            adapter?.off("accountChanged", updateAccount);
-            adapter?.off("chainChanged", updateChain);
+            adapter?.off("accountChanged", update);
+            adapter?.off("chainChanged", update);
         };
     }, [adapter]);
 
-    return <CoinmecaWalletAdapterContext.Provider value={{ adapter, account, chain }}>{children}</CoinmecaWalletAdapterContext.Provider>;
+    return <CoinmecaWalletAdapterContext.Provider value={{ adapter, address, chain }}>{children}</CoinmecaWalletAdapterContext.Provider>;
 };
