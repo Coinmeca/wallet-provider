@@ -76,7 +76,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         }
     }, [provider]);
 
-    const chainId = provider?.chainId;
+    const chainId = provider?.chain?.chainId?.toString();
     const account = provider?.account();
 
     return (
@@ -84,8 +84,8 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             value={{
                 provider,
                 account,
-                chain: provider?.chain,
                 accounts: provider?.accounts() as Account[],
+                chain: provider?.chain,
                 chains: provider?.chains,
                 apps: provider?.apps,
                 tokens: {
