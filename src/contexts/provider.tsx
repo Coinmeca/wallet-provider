@@ -76,7 +76,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         }
     }, [provider]);
 
-    const chainId = provider?.chain?.chainId?.toString();
+    const chainId = provider?.chain?.chainId?.toString() || "";
     const account = provider?.account();
 
     return (
@@ -89,9 +89,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 chains: provider?.chains,
                 apps: provider?.apps,
                 tokens: {
-                    fungibles: chainId ? account?.tokens?.fungibles?.[`${chainId}`] : undefined,
-                    nonFungibles: chainId ? account?.tokens?.nonFungibles?.[`${chainId}`] : undefined,
-                    multiTokens: chainId ? account?.tokens?.multiTokens?.[`${chainId}`] : undefined,
+                    fungibles: chainId ? account?.tokens?.fungibles?.[chainId] : undefined,
+                    nonFungibles: chainId ? account?.tokens?.nonFungibles?.[chainId] : undefined,
+                    multiTokens: chainId ? account?.tokens?.multiTokens?.[chainId] : undefined,
                 },
                 tx: account?.tx?.[chainId || ""],
             }}>
