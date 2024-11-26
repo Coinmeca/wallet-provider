@@ -20,8 +20,8 @@ export const useCoinmecaWallet = () => {
 
 export const CoinmecaWalletAdapterContextProvider: React.FC<{ config?: CoinmecaWalletAdapterConfig; children?: React.ReactNode }> = ({ config, children }) => {
     const [adapter, setAdapter] = useState<CoinmecaWalletAdapter>();
-    const [updates, setUpdate] = useState(0);
-    const update = () => setUpdate((_) => _ + 1);
+    const [updates, setUpdate] = useState(false);
+    const update = () => setUpdate((_) => !_);
 
     const address = adapter?.address;
     const chain = adapter?.chain;
