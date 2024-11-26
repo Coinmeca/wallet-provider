@@ -30,8 +30,8 @@ export const useCoinmecaWalletProvider = () => {
 
 export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     const [provider, setProvider] = useState<CoinmecaWalletProvider>();
-    const [updates, setUpdate] = useState(0);
-    const update = () => setUpdate((_) => _ + 1);
+    const [update, setUpdate] = useState(0);
+    const updates = () => setUpdate((_) => _ + 1);
 
     useLayoutEffect(() => {
         const sessionId = new Date().toJSON();
@@ -40,7 +40,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         setProvider(provider);
 
         const updateStorage = (event: StorageEvent) => {
-            if (event.storageArea === localStorage) update();
+            if (event.storageArea === localStorage) updates();
         };
         window.addEventListener("storage", updateStorage);
         return () => {
@@ -50,28 +50,28 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
 
     useLayoutEffect(() => {
         if (provider) {
-            provider?.on("unlock", update);
-            provider?.on("accountChanged", update);
-            provider?.on("accountUpdated", update);
-            provider?.on("chainChanged", update);
-            provider?.on("chainUpdated", update);
-            provider?.on("appUpdated", update);
-            provider?.on("tokenUpdated", update);
-            provider?.on("nftUpdated", update);
-            provider?.on("nftUpdated", update);
-            provider?.on("txUpdated", update);
+            provider?.on("unlock", updates);
+            provider?.on("accountChanged", updates);
+            provider?.on("accountUpdated", updates);
+            provider?.on("chainChanged", updates);
+            provider?.on("chainUpdated", updates);
+            provider?.on("appUpdated", updates);
+            provider?.on("tokenUpdated", updates);
+            provider?.on("nftUpdated", updates);
+            provider?.on("nftUpdated", updates);
+            provider?.on("txUpdated", updates);
 
             return () => {
-                provider?.off("unlock", update);
-                provider?.off("accountChanged", update);
-                provider?.off("accountUpdated", update);
-                provider?.off("chainChanged", update);
-                provider?.off("chainUpdated", update);
-                provider?.off("appUpdated", update);
-                provider?.off("tokenUpdated", update);
-                provider?.off("nftUpdated", update);
-                provider?.off("nftUpdated", update);
-                provider?.off("txUpdated", update);
+                provider?.off("unlock", updates);
+                provider?.off("accountChanged", updates);
+                provider?.off("accountUpdated", updates);
+                provider?.off("chainChanged", updates);
+                provider?.off("chainUpdated", updates);
+                provider?.off("appUpdated", updates);
+                provider?.off("tokenUpdated", updates);
+                provider?.off("nftUpdated", updates);
+                provider?.off("nftUpdated", updates);
+                provider?.off("txUpdated", updates);
             };
         }
     }, [provider]);
