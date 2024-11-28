@@ -1,8 +1,8 @@
 ﻿"use client";
 
+import React, { createContext, useContext, useLayoutEffect, useState } from "react";
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
-import { Account, App, Chain, TransactionReceipt } from "@coinmeca/wallet-sdk/types";
-import React, { createContext, useContext, useLayoutEffect, useMemo, useState } from "react";
+import { Account, App, Chain, TransactionReceipt, Contact } from "@coinmeca/wallet-sdk/types";
 
 interface CoinmecaWalletProviderContextProps {
     provider: CoinmecaWalletProvider | undefined;
@@ -17,6 +17,7 @@ interface CoinmecaWalletProviderContextProps {
         multiTokens?: string[];
     };
     tx: TransactionReceipt[] | undefined;
+    contact: Contact;
 }
 
 const CoinmecaWalletContext = createContext<CoinmecaWalletProviderContextProps | undefined>(undefined);
@@ -76,7 +77,8 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
         }
     }, [provider]);
 
-    const chainId = provider?.chain?.chainId?.toString() || "";
+    const chain = provider?.chain;
+    const chainId = chain?.chainId?.toString() || "";
     const account = provider?.account();
 
     return (
@@ -85,7 +87,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 provider,
                 account,
                 accounts: provider?.accounts() as Account[],
-                chain: provider?.chain,
+                chain,
                 chains: provider?.chains,
                 apps: provider?.apps,
                 tokens: {
@@ -94,6 +96,7 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                     multiTokens: chainId ? account?.tokens?.multiTokens?.[chainId] : undefined,
                 },
                 tx: account?.tx?.[chainId || ""],
+                contact: provider?.contact,
             }}>
             {children}
         </CoinmecaWalletContext.Provider>
