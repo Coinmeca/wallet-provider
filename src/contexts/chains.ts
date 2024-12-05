@@ -50,6 +50,7 @@ export const chainlist: Chains = {
                 "wss://eth-mainnet.4everland.org/ws/v1/37fa9972c1b1cd5fab542c7bdd4cde2f",
                 "wss://ethereum-rpc.publicnode.com",
             ],
+            blockExplorerUrls: ["https://etherscan.io/"],
             nativeCurrency: {
                 name: "Ethereum",
                 symbol: "ETH",
@@ -781,8 +782,8 @@ export function parseChainId(chain: number | string | Chain): number {
             ? Number(chain)
             : parseInt(chain)
         : typeof chain === "number"
-            ? chain
-            : parseChainId(chain?.chainId);
+        ? chain
+        : parseChainId(chain?.chainId);
 }
 
 export function formatChainId(chain: number | string | Chain): string {
@@ -792,8 +793,8 @@ export function formatChainId(chain: number | string | Chain): string {
             ? chain
             : formatChainId(parseInt(chain))
         : typeof chain === "number"
-            ? `0x${chain?.toString(16)}`
-            : formatChainId(chain?.chainId);
+        ? `0x${chain?.toString(16)}`
+        : formatChainId(chain?.chainId);
 }
 
 export function getChain(

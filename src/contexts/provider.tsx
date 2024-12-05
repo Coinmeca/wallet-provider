@@ -31,7 +31,7 @@ export const useCoinmecaWalletProvider = () => {
 
 export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     const [provider, setProvider] = useState<CoinmecaWalletProvider>();
-    const [update, setUpdate] = useState(0);
+    const [, setUpdate] = useState(0);
     const updates = () => setUpdate((_) => _ + 1);
 
     useLayoutEffect(() => {
@@ -61,6 +61,8 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             provider?.on("nftUpdated", updates);
             provider?.on("nftUpdated", updates);
             provider?.on("txUpdated", updates);
+            provider?.on("storageUpdated", updates);
+            provider?.on("storageCleared", updates);
 
             return () => {
                 provider?.off("unlock", updates);
@@ -73,6 +75,8 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 provider?.off("nftUpdated", updates);
                 provider?.off("nftUpdated", updates);
                 provider?.off("txUpdated", updates);
+                provider?.off("storageUpdated", updates);
+                provider?.off("storageCleared", updates);
             };
         }
     }, [provider]);
