@@ -1,6 +1,6 @@
 {
     "name": "@coinmeca/wallet-provider",
-    "version": "0.1.499",
+    "version": "0.1.5",
     "keywords": [
         "coinmeca",
         "ethereum",
@@ -50,7 +50,7 @@
         "clean": "rm -rf ./dist ./build ./.next ./node_modules/.cache ./tsconfig.tsbuildinfo"
     },
     "dependencies": {
-        "@coinmeca/wallet-sdk": "^0.1.499",
+        "@coinmeca/wallet-sdk": "^0.1.5",
         "next": "14.2.16",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
