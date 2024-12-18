@@ -51,7 +51,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
 
     useLayoutEffect(() => {
         if (provider) {
+            provider?.on("lock", updates);
             provider?.on("unlock", updates);
+            provider?.on("lockTimeUpdated", updates);
             provider?.on("accountChanged", updates);
             provider?.on("accountUpdated", updates);
             provider?.on("chainChanged", updates);
@@ -65,7 +67,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             provider?.on("storageCleared", updates);
 
             return () => {
+                provider?.off("lock", updates);
                 provider?.off("unlock", updates);
+                provider?.off("lockTimeUpdated", updates);
                 provider?.off("accountChanged", updates);
                 provider?.off("accountUpdated", updates);
                 provider?.off("chainChanged", updates);
