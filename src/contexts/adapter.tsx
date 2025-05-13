@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Chain } from "@coinmeca/wallet-sdk/types";
 import { CoinmecaWalletAdapter, CoinmecaWalletAdapterConfig } from "@coinmeca/wallet-sdk/adapter";
+import { TelegramProvider } from "./telegram";
 
 interface CoinmecaWalletAdapterContextProps {
     adapter: CoinmecaWalletAdapter | undefined;
@@ -48,5 +49,9 @@ export const CoinmecaWalletAdapterContextProvider: React.FC<{ config?: CoinmecaW
         };
     }, [adapter]);
 
-    return <CoinmecaWalletAdapterContext.Provider value={{ adapter, address, chain }}>{children}</CoinmecaWalletAdapterContext.Provider>;
+    return (
+        <TelegramProvider>
+            <CoinmecaWalletAdapterContext.Provider value={{ adapter, address, chain }}>{children}</CoinmecaWalletAdapterContext.Provider>
+        </TelegramProvider>
+    );
 };
