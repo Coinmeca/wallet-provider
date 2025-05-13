@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useLayoutEffect, useState } from "react";
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
 import { Account, App, Chain, TransactionReceipt, Contact } from "@coinmeca/wallet-sdk/types";
-import { TelegramProvider } from "./telegram";
 
 interface CoinmecaWalletProviderContextProps {
     provider: CoinmecaWalletProvider | undefined;
@@ -91,25 +90,23 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
     const account = provider?.account();
 
     return (
-        <TelegramProvider>
-            <CoinmecaWalletContext.Provider
-                value={{
-                    provider,
-                    account,
-                    accounts: provider?.accounts() as Account[],
-                    chain,
-                    chains: provider?.chains,
-                    apps: provider?.apps,
-                    tokens: {
-                        fungibles: chainId ? account?.tokens?.fungibles?.[chainId] : undefined,
-                        nonFungibles: chainId ? account?.tokens?.nonFungibles?.[chainId] : undefined,
-                        multiTokens: chainId ? account?.tokens?.multiTokens?.[chainId] : undefined,
-                    },
-                    tx: account?.tx?.[chainId || ""],
-                    contact: provider?.contact,
-                }}>
-                {children}
-            </CoinmecaWalletContext.Provider>
-        </TelegramProvider>
+        <CoinmecaWalletContext.Provider
+            value={{
+                provider,
+                account,
+                accounts: provider?.accounts() as Account[],
+                chain,
+                chains: provider?.chains,
+                apps: provider?.apps,
+                tokens: {
+                    fungibles: chainId ? account?.tokens?.fungibles?.[chainId] : undefined,
+                    nonFungibles: chainId ? account?.tokens?.nonFungibles?.[chainId] : undefined,
+                    multiTokens: chainId ? account?.tokens?.multiTokens?.[chainId] : undefined,
+                },
+                tx: account?.tx?.[chainId || ""],
+                contact: provider?.contact,
+            }}>
+            {children}
+        </CoinmecaWalletContext.Provider>
     );
 };
