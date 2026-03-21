@@ -74,7 +74,7 @@
         "clean": "rm -rf ./dist ./build ./.next ./node_modules/.cache ./tsconfig.tsbuildinfo"
     },
     "dependencies": {
-        "@coinmeca/wallet-sdk": "0.1.66",
+        "@coinmeca/wallet-sdk": "0.1.7",
         "next": "14.2.20",
         "react": "18.3.1",
         "react-dom": "18.3.1"
