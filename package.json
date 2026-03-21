@@ -21,26 +21,50 @@
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "module": "./dist/index.esm.js",
+    "module": "./dist/index.js",
     "files": [
         "./dist"
     ],
     "exports": {
         ".": {
-            "require": "./dist/index"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         },
-        "./*": [
-            "./dist/*",
-            "./dist/*/index",
-            "./dist/*"
-        ]
+        "./adapter": {
+            "types": "./dist/adapter.d.ts",
+            "import": "./dist/adapter.js",
+            "default": "./dist/adapter.js"
+        },
+        "./provider": {
+            "types": "./dist/provider.d.ts",
+            "import": "./dist/provider.js",
+            "default": "./dist/provider.js"
+        },
+        "./telegram": {
+            "types": "./dist/telegram.d.ts",
+            "import": "./dist/telegram.js",
+            "default": "./dist/telegram.js"
+        },
+        "./chains": {
+            "types": "./dist/chains.d.ts",
+            "import": "./dist/chains.js",
+            "default": "./dist/chains.js"
+        }
     },
     "typesVersions": {
         "*": {
-            "*": [
-                "./dist/*",
-                "./dist/*/index",
-                "./dist/index"
+            "adapter": [
+                "./dist/adapter.d.ts"
+            ],
+            "provider": [
+                "./dist/provider.d.ts"
+            ],
+            "telegram": [
+                "./dist/telegram.d.ts"
+            ],
+            "chains": [
+                "./dist/chains.d.ts"
             ]
         }
     },
@@ -48,12 +72,15 @@
         "setup": "git submodule update --init --recursive && cd wallet-sdk && git fetch origin && git checkout dev && git pull origin dev && cd .. && git submodule update --init --recursive",
         "dev": "next dev",
         "install:sdk": "yarn workspace @coinmeca/wallet-sdk install",
-        "check": "npx tsc --watch",
-        "build": "yarn clean && npx tsc --build --force",
+        "check": "npx tsc --project tsconfig.json --watch --tsBuildInfoFile dist/tsconfig.tsbuildinfo",
+        "build": "yarn clean && npx tsc --project tsconfig.json --tsBuildInfoFile dist/tsconfig.tsbuildinfo && node -e \"const fs=require('node:fs'); const required=['./dist/index.js','./dist/provider.js','./dist/notification.js','./dist/notification-sw.js']; const missing=required.filter((path)=>!fs.existsSync(path)); if(missing.length){console.error('Missing build outputs:', missing.join(', ')); process.exit(1);}\"",
+        "pack:verify": "npm pack --dry-run --cache ./.npm-cache",
+        "prepack": "corepack yarn build",
+        "prepublishOnly": "corepack yarn pack:verify",
         "build:sdk": "yarn workspace @coinmeca/wallet-sdk build",
         "deploy": "npm publish",
         "deploy:sdk": "yarn workspace @coinmeca/wallet-sdk deploy",
-        "clean": "rm -rf ./dist ./build ./.next ./node_modules/.cache ./tsconfig.tsbuildinfo"
+        "clean": "node -e \"for (const path of ['./dist','./build','./.next','./node_modules/.cache','./tsconfig.tsbuildinfo']) require('node:fs').rmSync(path, { recursive: true, force: true });\""
     },
     "dependencies": {
         "next": "14.2.20",
@@ -61,7 +88,6 @@
         "react-dom": "18.3.1"
     },
     "devDependencies": {
-        "@types/crypto-js": "^4.2.2",
         "@types/node": "22.10.2",
         "@types/react": "18.3.17",
         "@types/react-dom": "18.3.5",

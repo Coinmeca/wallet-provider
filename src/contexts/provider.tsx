@@ -4,6 +4,9 @@ import React, { createContext, useContext, useLayoutEffect, useState } from "rea
 import { CoinmecaWalletProvider } from "@coinmeca/wallet-sdk/provider";
 import { Account, App, Chain, TransactionReceipt, Contact } from "@coinmeca/wallet-sdk/types";
 import { TelegramProvider } from "./telegram";
+import { CoinmecaWalletNotificationBridge } from "./notification";
+
+let sharedWalletProvider: CoinmecaWalletProvider | undefined;
 
 interface CoinmecaWalletProviderContextProps {
     provider: CoinmecaWalletProvider | undefined;
@@ -36,10 +39,10 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
     const updates = () => setUpdate((_) => _ + 1);
 
     useLayoutEffect(() => {
-        const sessionId = new Date().toJSON();
         const chainId = (window as any)?.coinmeca?.request?.chainId;
-        const provider = (window as any)?.coinmeca?.wallet || new CoinmecaWalletProvider({ chainId, sessionId });
-        setProvider(provider);
+        const wallet = sharedWalletProvider || new CoinmecaWalletProvider({ chainId });
+        sharedWalletProvider = wallet;
+        setProvider(wallet);
 
         const updateStorage = (event: StorageEvent) => {
             if (event.storageArea === localStorage) updates();
@@ -62,7 +65,6 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
             provider?.on("appUpdated", updates);
             provider?.on("tokenUpdated", updates);
             provider?.on("nftUpdated", updates);
-            provider?.on("nftUpdated", updates);
             provider?.on("txUpdated", updates);
             provider?.on("storageUpdated", updates);
             provider?.on("storageCleared", updates);
@@ -77,7 +79,6 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                 provider?.off("chainUpdated", updates);
                 provider?.off("appUpdated", updates);
                 provider?.off("tokenUpdated", updates);
-                provider?.off("nftUpdated", updates);
                 provider?.off("nftUpdated", updates);
                 provider?.off("txUpdated", updates);
                 provider?.off("storageUpdated", updates);
@@ -106,8 +107,9 @@ export const CoinmecaWalletContextProvider: React.FC<{ children?: React.ReactNod
                         multiTokens: chainId ? account?.tokens?.multiTokens?.[chainId] : undefined,
                     },
                     tx: account?.tx?.[chainId || ""],
-                    contact: provider?.contact,
+                    contact: provider?.contact || ({} as Contact),
                 }}>
+                <CoinmecaWalletNotificationBridge provider={provider} />
                 {children}
             </CoinmecaWalletContext.Provider>
         </TelegramProvider>

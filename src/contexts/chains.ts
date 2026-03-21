@@ -1,3 +1,4 @@
+import { formatChainId as sdkFormatChainId, parseChainId as sdkParseChainId, valid as sdkValid } from "@coinmeca/wallet-sdk/utils";
 import { Chain, Chains } from "@coinmeca/wallet-sdk/types";
 
 export const chainlist: Chains = {
@@ -775,27 +776,9 @@ export const chainlist: Chains = {
     },
 };
 
-export function parseChainId(chain: number | string | Chain): number {
-    if (!chain) return 0;
-    return typeof chain === "string"
-        ? chain.startsWith("0x")
-            ? Number(chain)
-            : parseInt(chain)
-        : typeof chain === "number"
-        ? chain
-        : parseChainId(chain?.chainId);
-}
+export const parseChainId = sdkParseChainId;
 
-export function formatChainId(chain: number | string | Chain): string {
-    if (!chain) return chain as any;
-    return typeof chain === "string"
-        ? chain.startsWith("0x")
-            ? chain
-            : formatChainId(parseInt(chain))
-        : typeof chain === "number"
-        ? `0x${chain?.toString(16)}`
-        : formatChainId(chain?.chainId);
-}
+export const formatChainId = sdkFormatChainId;
 
 export function getChain(
     chainName: string,
@@ -819,6 +802,7 @@ export function getChainByName(chainName: string): Chain | undefined {
 }
 
 export function getChainById(chainId: number | string): Chain | undefined {
+    if (!sdkValid.chainId(chainId)) return;
     chainId = parseChainId(chainId) as number;
     return Object.values(chainlist)
         .flatMap((network) => [network?.mainnet, ...(network?.testnet ? Object.values(network?.testnet) : [])])
