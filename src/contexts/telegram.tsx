@@ -2,123 +2,17 @@
 
 import Script from "next/script";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import CryptoJS from "crypto-js";
+import {
+    format as sdkFormat,
+    loadStorage as sdkLoadStorage,
+    parse as sdkParse,
+    type StorageController,
+} from "@coinmeca/wallet-sdk/utils";
 
-export const encrypt = (data?: string, salt?: string): string | undefined => {
-    if (!data || !salt) return data;
-    return CryptoJS.AES.encrypt(data, CryptoJS.SHA256(salt), {
-        mode: CryptoJS.mode.ECB,
-        padding: CryptoJS.pad.Pkcs7,
-    }).toString();
-};
-
-export const decrypt = (data?: string | null, salt?: string): string | undefined => {
-    if (!data) return undefined;
-    else if (!salt) return data;
-    return CryptoJS.AES.decrypt(data, CryptoJS.SHA256(salt), {
-        mode: CryptoJS.mode.ECB,
-        padding: CryptoJS.pad.Pkcs7,
-    }).toString(CryptoJS.enc.Utf8);
-};
-
-export const format = (value?: any): string | undefined => {
-    if (!value || typeof value === "undefined") return value;
-    if (typeof value === "boolean" || typeof value === "number") return value.toString();
-    return JSON.stringify(value);
-};
-
-export const parse = (value?: string): any => {
-    if (!value || typeof value === "undefined") return value;
-    if (value === "true" || value === "false") return value === "true";
-    if (/^[0-9]*\.[0-9]+$/.test(value)) return parseFloat(value);
-    return JSON.parse(value);
-};
-
-export interface StorageController {
-    get: (key: string) => any;
-    gets: (keys: string[]) => Record<string, any>;
-    getAll: () => Record<string, any>;
-    set: (key: string, value: any) => void;
-    sets: (map: string[][]) => void;
-    remove: (key: string) => void;
-    removes: (keys: string[]) => void;
-    clear: () => void;
-}
-
-export const loadStorage = (prefix: string, storage?: CloudStorage | Storage, isTelegram?: boolean, salt?: string): StorageController => ({
-    get: (key: string) => {
-        return parse(decrypt(storage?.getItem(encrypt(`${prefix}:${key}`, salt)!) as string, salt));
-    },
-    gets: (keys: string[]) => {
-        const values: Record<string, any> = {};
-        if (isTelegram) {
-            const items = storage?.getItems(keys?.map((k) => encrypt(`${prefix}:${k}`, salt))) as string[];
-            items.forEach((v: string | undefined, i: number) => {
-                if (v) values[keys[i]] = parse(decrypt(v, salt));
-            });
-        } else {
-            keys.forEach((key) => {
-                const value = storage?.getItem(encrypt(`${prefix}:${key}`, salt)!) as string;
-                if (value) values[key] = parse(decrypt(value, salt));
-            });
-        }
-        return values;
-    },
-    getAll: () => {
-        const values: Record<string, any> = {};
-        if (isTelegram) {
-            const keys = storage?.getKeys() as any;
-            const items = storage?.getItems(keys?.map((k: string) => decrypt(k, salt))) as any;
-            items.forEach((v: string | undefined, i: number) => {
-                if (v) values[keys[i].replace(`${prefix}:`, "")] = parse(decrypt(v, salt));
-            });
-        } else {
-            if ((storage as Storage)?.length)
-                for (let i = 0; i < (storage as Storage).length; i++) {
-                    const key = decrypt((storage as Storage)?.key(i), salt);
-                    if (key && key.startsWith(`${prefix}:`)) {
-                        const value = storage?.getItem(key) as string;
-                        if (value) values[key.replace(`${prefix}:`, "")] = parse(decrypt(value, salt));
-                    }
-                }
-        }
-        return values;
-    },
-    set: (key: string, value: any) => {
-        value = encrypt(format(value), salt);
-        return value && storage?.setItem(encrypt(`${prefix}:${key}`, salt)!, value as string);
-    },
-    sets: (map: string[][]) => {
-        return (
-            map &&
-            Array.isArray(map) &&
-            Array?.isArray(map?.[0]) &&
-            map?.map((item) => {
-                if (item?.[0] && item?.[1]) {
-                    const value = encrypt(format(item[1]), salt);
-                    if (value) storage?.setItem(encrypt(`${prefix}:${item[0]}`, salt)!, value as any);
-                }
-            })
-        );
-    },
-    remove: (key: string) => {
-        return storage?.removeItem(encrypt(`${prefix}:${key}`, salt)!);
-    },
-    removes: (keys: string[]) => {
-        if (isTelegram) {
-            storage?.removeItems(keys?.map((k) => encrypt(`${prefix}:${k}`, salt)));
-        } else {
-            keys.forEach((key) => localStorage.removeItem(encrypt(`${prefix}:${key}`, salt)!));
-        }
-    },
-    clear: () => {
-        try {
-            return isTelegram ? storage?.removeItems(storage?.getKeys()?.map((k: string) => encrypt(k, salt)) as any) : (storage as Storage)?.clear();
-        } catch (e) {
-            console.error(e);
-        }
-    },
-});
+export const format = sdkFormat;
+export const parse = sdkParse;
+export const loadStorage = sdkLoadStorage;
+export type { StorageController };
 
 export interface TelegramController {
     telegram: Telegram["WebApp"] | undefined;

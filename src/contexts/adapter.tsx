@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 import { Chain } from "@coinmeca/wallet-sdk/types";
 import { CoinmecaWalletAdapter, CoinmecaWalletAdapterConfig } from "@coinmeca/wallet-sdk/adapter";
+import { formatChainId, valid } from "@coinmeca/wallet-sdk/utils";
 import { TelegramProvider } from "./telegram";
 
 interface CoinmecaWalletAdapterContextProps {
@@ -23,12 +24,32 @@ export const CoinmecaWalletAdapterContextProvider: React.FC<{ config?: CoinmecaW
     const [adapter, setAdapter] = useState<CoinmecaWalletAdapter>();
     const [updates, setUpdate] = useState(false);
     const update = () => setUpdate((_) => !_);
+    const evented = (value?: any): value is CoinmecaWalletAdapter =>
+        !!value && typeof value === "object" && typeof value?.request === "function" && typeof value?.on === "function" && typeof value?.off === "function";
+    const find = () => {
+        const ethereum = (window as any)?.ethereum;
+        const injected = ethereum?.providerMap?.get?.("CoinmecaWallet");
+        if (evented(injected)) return injected;
+
+        const provider = ethereum?.providers?.find?.((item: any) => item?.isCoinmecaWallet && evented(item));
+        if (evented(provider)) return provider;
+
+        return evented(ethereum) && ethereum?.isCoinmecaWallet ? ethereum : undefined;
+    };
 
     const address = adapter?.address;
-    const chain = adapter?.chain;
+    const adapterChain = adapter?.chain;
+    const adapterChainId = adapter?.chainId;
+    const chain =
+        adapterChain &&
+        adapterChainId &&
+        valid.chainId(adapterChain?.chainId) &&
+        formatChainId(adapterChain.chainId) === adapterChainId
+            ? adapterChain
+            : undefined;
 
     useLayoutEffect(() => {
-        setAdapter((window as any)?.ethereum?.providerMap?.get("CoinmecaWallet") || new CoinmecaWalletAdapter(config));
+        setAdapter(find() || new CoinmecaWalletAdapter(config));
 
         const updateStorage = (event: StorageEvent) => {
             if (event.storageArea === localStorage) update();
@@ -40,12 +61,13 @@ export const CoinmecaWalletAdapterContextProvider: React.FC<{ config?: CoinmecaW
     }, []);
 
     useEffect(() => {
-        adapter?.on("accountChanged", update);
-        adapter?.on("chainChanged", update);
+        if (!evented(adapter)) return;
+        adapter.on("accountChanged", update);
+        adapter.on("chainChanged", update);
 
         return () => {
-            adapter?.off("accountChanged", update);
-            adapter?.off("chainChanged", update);
+            adapter.off("accountChanged", update);
+            adapter.off("chainChanged", update);
         };
     }, [adapter]);
 
